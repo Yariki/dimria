@@ -1,0 +1,59 @@
+import json
+import azure.functions as func
+from datetime import datetime
+import logging
+import time
+from pydantic.tools import parse_obj_as
+
+from dimria.dimria_requests import get_details, search_adverts
+from dimria.models import AdvertsList
+from dimria.service_bus import send_advert_detail_message, send_advert_list_message
+
+app = func.FunctionApp()
+
+@app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
+def http_search_adverts(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+
+    searchResponse = search_adverts()
+    if not searchResponse:
+        logging.error("No adverts found")
+        return func.HttpResponse(
+            "No adverts found",
+            status_code=200
+        )
+
+    if searchResponse.count > 0:
+        logging.info("Send message about adverts")
+        advertList = AdvertsList(items=searchResponse.items)
+        send_advert_list_message(advertList)
+
+    return func.HttpResponse(f"There are {searchResponse.count} adverts")
+
+
+@app.function_name("adverts_list_message_handler")
+@app.service_bus_queue_trigger(
+    arg_name="msg",
+    queue_name="advertisements",
+    connection="SERVICE_BUS_CONNECTION_STRING_SEND_LISTEN")
+def adverts_list_message_handler(msg: func.ServiceBusMessage):
+
+    str_data = msg.get_body().decode('utf-8')
+    json_data = json.loads(str_data)
+    advertList = parse_obj_as(AdvertsList, json_data)
+
+    logging.info(f"Received message: {advertList}")
+
+    if not advertList or advertList.items is None:
+        logging.error("No adverts revceived")
+        return
+
+    for advertId in advertList.items:
+        logging.info(f"Get details for advert {advertId}")
+        details = get_details(advertId)
+        if details:
+            logging.info(f"City: {details.city_id}: Rooms: {details.rooms_count}: Price: {details.currency_type_uk}{details.price}")
+            send_advert_detail_message(details)
+        else:
+            logging.error(f"Error getting details for advert {advertId}")
+

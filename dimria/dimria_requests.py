@@ -35,7 +35,7 @@ def get_details(advertId: int) -> AdvertDetails:
 
     response = requests.get(details_url)
     json = response.json()
-    details: AdvertDetails = AdvertDetails(**json)
+    details: AdvertDetails = AdvertDetails(**json, advert_id=advertId)
 
     if not details:
         return None

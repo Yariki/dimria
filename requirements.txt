@@ -4,6 +4,8 @@
 
 azure-functions
 azure-servicebus
+azure-core
+azure-cosmos==4.5.2b1
 regex
 requests
 pydantic

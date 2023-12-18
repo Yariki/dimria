@@ -4,9 +4,10 @@ from datetime import datetime
 import logging
 import time
 from pydantic.tools import parse_obj_as
+from dimria.cosmos_db import process_advert
 
 from dimria.dimria_requests import get_details, search_adverts
-from dimria.models import AdvertsList
+from dimria.models import AdvertDetails, AdvertsList
 from dimria.service_bus import send_advert_detail_message, send_advert_list_message
 
 app = func.FunctionApp()
@@ -51,9 +52,26 @@ def adverts_list_message_handler(msg: func.ServiceBusMessage):
     for advertId in advertList.items:
         logging.info(f"Get details for advert {advertId}")
         details = get_details(advertId)
-        if details:
+        if details is not None:
             logging.info(f"City: {details.city_id}: Rooms: {details.rooms_count}: Price: {details.currency_type_uk}{details.price}")
             send_advert_detail_message(details)
         else:
             logging.error(f"Error getting details for advert {advertId}")
 
+
+
+@app.function_name("advert_details_save_db")
+@app.service_bus_queue_trigger(
+    arg_name="msg",
+    queue_name="advert_details",
+    connection="SERVICE_BUS_CONNECTION_STRING_SEND_LISTEN")
+def advert_details_save_db(msg: func.ServiceBusMessage):
+
+    try:
+        str_data = msg.get_body().decode('utf-8')
+        json_data = json.loads(str_data)
+        advert = parse_obj_as(AdvertDetails, json_data)
+
+        process_advert(advert)
+    except Exception as e:
+        logging.error(f"Error processing advert: {e}")

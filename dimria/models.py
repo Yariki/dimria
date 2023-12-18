@@ -6,6 +6,7 @@ class SearchResponse(BaseModel):
 
 
 class AdvertDetails(BaseModel):
+    advert_id: int
     city_name: str
     state_id: int
     city_id: int

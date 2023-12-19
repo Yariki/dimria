@@ -12,24 +12,19 @@ from dimria.service_bus import send_advert_detail_message, send_advert_list_mess
 
 app = func.FunctionApp()
 
-@app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
-def http_search_adverts(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+#@app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
+@app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
+def timer_search_adverts(mytimer: func.TimerRequest) -> None:
 
     searchResponse = search_adverts()
     if not searchResponse:
         logging.error("No adverts found")
-        return func.HttpResponse(
-            "No adverts found",
-            status_code=200
-        )
+        return None
 
     if searchResponse.count > 0:
         logging.info("Send message about adverts")
         advertList = AdvertsList(items=searchResponse.items)
         send_advert_list_message(advertList)
-
-    return func.HttpResponse(f"There are {searchResponse.count} adverts")
 
 
 @app.function_name("adverts_list_message_handler")

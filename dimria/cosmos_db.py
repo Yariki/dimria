@@ -89,3 +89,34 @@ def create_item(advert: AdvertDetails):
         "currency_type_uk": advert.currency_type_uk,
         "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
+
+def get_adverts():
+
+    client = cosmos_client.CosmosClient(settings['host'], {'masterKey': settings['master_key']}, user_agent="DimRia", user_agent_overwrite=True)
+    try:
+        # setup database for this sample
+        try:
+            db = client.get_database_client(settings['db_id'])
+        except exceptions.CosmosResourceExistsError:
+            logging.error('Database with id \'{0}\' was not found'.format(settings['db_id']))
+
+        # setup container for this sample
+        try:
+            container = db.get_container_client(settings['container_id'])
+
+        except exceptions.CosmosResourceExistsError:
+            logging.error('Container with id \'{0}\' was not found'.format(settings['container_id']))
+
+        items = list(container.query_items(
+            query='SELECT * FROM adverts a',
+            enable_cross_partition_query=True
+        ))
+
+        return items
+
+    except exceptions.CosmosHttpResponseError as e:
+        logging.error('\nrun_sample has caught an error. {0}'.format(e.message))
+
+    finally:
+            logging.info(f"\n Get Adverts")
+

@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 import time
 from pydantic.tools import parse_obj_as
-from dimria.cosmos_db import process_advert
+from dimria.cosmos_db import process_advert, get_adverts
 
 from dimria.dimria_requests import get_details, search_adverts
 from dimria.models import AdvertDetails, AdvertsList
@@ -70,3 +70,25 @@ def advert_details_save_db(msg: func.ServiceBusMessage):
         process_advert(advert)
     except Exception as e:
         logging.error(f"Error processing advert: {e}")
+
+
+@app.route("get_advertisements", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
+def get_advertisements(req: func.HttpRequest) -> func.HttpResponse:
+
+    adverts = get_adverts()
+    if not adverts:
+        logging.error("No adverts found")
+        return None
+
+    results = dict()
+
+    for advert in adverts:
+        if advert["advert_id"] not in results.keys():
+            results[advert["advert_id"]] = []
+            results[advert["advert_id"]].append(advert)
+        else:
+            results[advert["advert_id"]].append(advert)
+
+    data = json.dumps(results)
+
+    return data

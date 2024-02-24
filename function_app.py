@@ -4,13 +4,18 @@ from datetime import datetime
 import logging
 import time
 from pydantic.tools import parse_obj_as
-from dimria.cosmos_db import process_advert, get_adverts
+from dimria.cosmos_db import process_advert
 
-from dimria.dimria_requests import get_details, search_adverts
+from dimria.dimria_requests import search_adverts, get_advert_details
 from dimria.models import AdvertDetails, AdvertsList
+from dimria.models.AdvertDetailsResponse import AdvertDetailsResponse, AdvertDetailsResponseEncoder
+from dimria.models.AdvertDtoEncoder import AdvertDtoEncoder
+from dimria.requests_handle import get_adverts_statistics, get_http_advert_details
 from dimria.service_bus import send_advert_detail_message, send_advert_list_message
 
 app = func.FunctionApp()
+
+################################################################################################
 
 #@app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
 @app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
@@ -26,6 +31,7 @@ def timer_search_adverts(mytimer: func.TimerRequest) -> None:
         advertList = AdvertsList(items=searchResponse.items)
         send_advert_list_message(advertList)
 
+################################################################################################
 
 @app.function_name("adverts_list_message_handler")
 @app.service_bus_queue_trigger(
@@ -46,14 +52,14 @@ def adverts_list_message_handler(msg: func.ServiceBusMessage):
 
     for advertId in advertList.items:
         logging.info(f"Get details for advert {advertId}")
-        details = get_details(advertId)
+        details = get_advert_details(advertId)
         if details is not None:
             logging.info(f"City: {details.city_id}: Rooms: {details.rooms_count}: Price: {details.currency_type_uk}{details.price}")
             send_advert_detail_message(details)
         else:
             logging.error(f"Error getting details for advert {advertId}")
 
-
+################################################################################################
 
 @app.function_name("advert_details_save_db")
 @app.service_bus_queue_trigger(
@@ -71,24 +77,55 @@ def advert_details_save_db(msg: func.ServiceBusMessage):
     except Exception as e:
         logging.error(f"Error processing advert: {e}")
 
+################################################################################################
 
 @app.route("get_advertisements", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def get_advertisements(req: func.HttpRequest) -> func.HttpResponse:
 
-    adverts = get_adverts()
-    if not adverts:
-        logging.error("No adverts found")
-        return None
+    results = get_adverts_statistics()
 
-    results = dict()
+    if(results is None):
+        return func.HttpResponse("No adverts found", status_code=404)
 
-    for advert in adverts:
-        if advert["advert_id"] not in results.keys():
-            results[advert["advert_id"]] = []
-            results[advert["advert_id"]].append(advert)
-        else:
-            results[advert["advert_id"]].append(advert)
+    data = json.dumps(results, cls=AdvertDtoEncoder)
+    return data
 
-    data = json.dumps(results)
+################################################################################################
 
+@app.route("get_advert_details/{id:int?}", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS )
+def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
+
+    advert_id = req.route_params.get('id')
+
+    if(advert_id is None):
+        return func.HttpResponse("No advert id found", status_code=404)
+
+    resultRequest = get_http_advert_details(advert_id)
+
+    if(resultRequest is None):
+        return func.HttpResponse("No advert details found", status_code=404)
+
+    print(type(resultRequest))
+
+    cityName = resultRequest['city_name']
+    state_id = resultRequest['state_id']
+    city_id = resultRequest['city_id']
+    currency_type_id = resultRequest['currency_type_id']
+    price = resultRequest['price']
+    rooms_count = resultRequest['rooms_count']
+    currency_type_uk = resultRequest['currency_type_uk']
+    description = resultRequest['description_uk']
+    floor=resultRequest['floor_info']
+
+    resultResponse: AdvertDetailsResponse = AdvertDetailsResponse(
+        advert_id=advert_id,
+        city_name=cityName,
+        price=price,
+        rooms_count=rooms_count,
+        currency=currency_type_uk,
+        description=description,
+        floor=floor
+    )
+
+    data = json.dumps(resultResponse, cls=AdvertDetailsResponseEncoder)
     return data

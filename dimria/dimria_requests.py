@@ -2,7 +2,7 @@ import requests
 import os
 import logging
 
-from dimria.models import SearchResponse, AdvertDetails
+from dimria.models import AdvertDetails, SearchResponse
 
 API_KEY = os.getenv("DIMRIA_API_KEY")
 
@@ -30,7 +30,7 @@ def search_adverts() -> SearchResponse:
     return searchResponse
 
 
-def get_details(advertId: int) -> AdvertDetails:
+def get_advert_details(advertId: int) -> AdvertDetails:
     details_url = f"https://developers.ria.com/dom/info/{advertId}?api_key={API_KEY}"
 
     response = requests.get(details_url)

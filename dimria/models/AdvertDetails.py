@@ -1,9 +1,5 @@
 from pydantic import BaseModel
 
-class SearchResponse(BaseModel):
-    count: int
-    items: list[int]
-
 
 class AdvertDetails(BaseModel):
     advert_id: int
@@ -16,5 +12,3 @@ class AdvertDetails(BaseModel):
     currency_type_uk: str
     """$"""
 
-class AdvertsList(BaseModel):
-    items: list[int]

@@ -2,6 +2,7 @@ import {selectAdverts} from "../redux/adverts/selectors";
 import {useSelector} from "react-redux";
 import {AnalyticalTable, Grid} from "@ui5/webcomponents-react";
 import React from "react";
+import {Icon} from "@ui5/webcomponents-react";
 
 export const AdvertList = () => {
 
@@ -17,28 +18,37 @@ export const AdvertList = () => {
             accessor: 'city_name'
         },
         {
-            Header: 'Price',
-            accessor: 'price'
-        },
-        {
-            Header: 'Rooms',
+            Header: 'Room Count',
             accessor: 'rooms_count'
         },
         {
-            Header: 'Created',
-            accessor: 'created_at'
+            Header: 'Direction',
+            accessor: 'direction',
+            Cell: (props: any) => {
+                const {value} = props;
+
+                const iconName = value > 0
+                    ? 'arrow-top'
+                    : value < 0
+                        ?  'arrow-bottom'
+                        : 'menu2';
+                const design = value > 0
+                    ? 'Positive'
+                    : value < 0
+                        ?  'Negative'
+                        : 'Information';
+
+                return (
+                    <Icon name={iconName} design={design} />
+                );
+            }
         }
     ];
 
     return (
-        <Grid>
-            { adverts && adverts.map((advert) => (
-                <div data-layout-indent="XL1 L1 M1 S0"
-                     data-layout-span="XL8 L8 M8 S8">
-                    <AnalyticalTable columns={columns} data={advert.adverts} />
-                </div>
-            ))}
-        </Grid>
+        <>
+            { adverts && <AnalyticalTable columns={columns} data={adverts} />}
+        </>
     );
 
 };

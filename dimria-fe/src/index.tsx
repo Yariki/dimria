@@ -7,24 +7,30 @@ import reportWebVitals from './reportWebVitals';
 import {AppShell} from "./Components/AppShell/AppShell";
 import createStore from "./redux/store";
 import {Provider} from "react-redux";
+import {DevSupport} from "@react-buddy/ide-toolbox";
+import {ComponentPreviews, useInitial} from "./dev";
 
-const  store =createStore();
+const store = createStore();
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+    document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-      <Provider store={store}>
-          <ThemeProvider>
-              <AppShell>
-                  <Page header={<Bar  startContent={<Title>Adverts</Title>}  />}>
-                      <App />
-                  </Page>
-              </AppShell>
-          </ThemeProvider>
-      </Provider>
-  </React.StrictMode>
+    <React.StrictMode>
+        <Provider store={store}>
+            <ThemeProvider>
+                <AppShell>
+                    <Page header={<Bar startContent={<Title>Adverts</Title>}/>}>
+                        <DevSupport ComponentPreviews={ComponentPreviews}
+                                    useInitialHook={useInitial}
+                        >
+                            <App/>
+                        </DevSupport>
+                    </Page>
+                </AppShell>
+            </ThemeProvider>
+        </Provider>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

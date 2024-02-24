@@ -1,8 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import Adverts from "../../models/Adverts";
+import {AdvertDto} from "../../models/AdvertDto";
 
 export interface AdvertsState {
-    data: Adverts[] | null;
+    data: AdvertDto[] | null;
     loading: boolean;
     error: string | null;
 }
@@ -22,15 +22,7 @@ export const advertSlice = createSlice({
             state.error = '';
         },
         fetchAdvertsSuccess: (state: AdvertsState, action: PayloadAction<any>) => {
-            const data : Adverts[] = [];
-            for (let key in action.payload) {
-                const keyData = Number(key);
-                data.push({
-                    advert_id: keyData,
-                    adverts: action.payload[keyData]
-                });
-            }
-            state.data = data;
+            state.data = action.payload as AdvertDto[]
             state.loading = false;
             state.error = '';
         },

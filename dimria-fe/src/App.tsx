@@ -2,8 +2,9 @@ import React, {useEffect} from 'react';
 import Loading from './Components/Loading';
 import {useDispatch, useSelector} from "react-redux";
 import {fetchAdvertsStart} from "./redux/adverts/advertSlices";
-import {selectAdverts, selectAdvertLoading, selectAdvertError} from "./redux/adverts/selectors";
-import {AdvertList} from "./Components/AdvertList";
+import {selectAdverts, selectAdvertLoading} from "./redux/adverts/selectors";
+
+import {AdvertsPage} from "./Components/AdvertsPage";
 
 function App() {
 
@@ -18,7 +19,7 @@ function App() {
   return (
     <>
         {loading && <Loading />}
-        {adverts && <AdvertList />}
+        {adverts && <AdvertsPage />}
     </>
   );
 }

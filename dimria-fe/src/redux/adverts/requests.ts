@@ -7,3 +7,6 @@ export const fetchAdverts = async () => {
 export const fetchAdvertDetails = async (advertId: string) => {
     return await axios.get(`https://dimria-advert-prices.azurewebsites.net/api/get_advert_details/${advertId}`);
 }
+
+export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+

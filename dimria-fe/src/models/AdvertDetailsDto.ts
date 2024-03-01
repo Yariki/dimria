@@ -1,5 +1,4 @@
 
-
 export interface AdvertDetailsDto{
     advert_id: number;
     city_name: string;

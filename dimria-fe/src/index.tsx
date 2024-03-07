@@ -4,9 +4,10 @@ import { Page, ThemeProvider} from '@ui5/webcomponents-react'
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {AppShell} from "./Components/AppShell/AppShell";
 import createStore from "./redux/store";
 import {Provider} from "react-redux";
+import { AppShellBar } from './Components/AppShell/AppShellBar';
+import '@ui5/webcomponents-react/dist/Assets.js';
 
 const store = createStore();
 
@@ -17,11 +18,10 @@ root.render(
     <React.StrictMode>
         <Provider store={store}>
             <ThemeProvider>
-                <AppShell>
-                    <Page >
-                        <App/>
-                    </Page>
-                </AppShell>
+                <div id="container">
+                    <AppShellBar/>
+                    <App/>
+                </div>
             </ThemeProvider>
         </Provider>
     </React.StrictMode>

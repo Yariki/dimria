@@ -1,63 +1,63 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect} from "react";
+import React, {forwardRef, useEffect} from "react";
 import {fetchAdvertDetailsStart} from "../../redux/adverts/advertSlices";
 import {
-    Bar,
-    BusyIndicator, Button,
-    Dialog,
-    DynamicPageTitle, ExpandableText,
-    Form, FormItem, Label,
+    BusyIndicator,
+    Button,
+    Dialog, ExpandableText,
+    FlexBox,
+    FlexBoxAlignItems,
+    Label,
+    Title,
+    TitleLevel,
 } from "@ui5/webcomponents-react";
 import {selectDetails, selectDetailsLoading} from "../../redux/adverts/selectors";
 
 
 export interface AdvertDetailsModalProps {
-    isOpen: boolean;
-    advertId: string;
+       advertId: string;
     onClose: () => void;
 }
 
-export const AdvertDetailsModal = (props: AdvertDetailsModalProps) => {
+const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((props: AdvertDetailsModalProps, ref: any) => {
 
     const dispatch = useDispatch();
-    const {advertId, onClose, isOpen} = props;
+    const {advertId, onClose} = props;
 
     const isDetailsLoading = useSelector(selectDetailsLoading);
     const advertDetailsDto = useSelector(selectDetails);
 
     useEffect(() => {
         dispatch(fetchAdvertDetailsStart(advertId));
-    },[advertId])
+    },[advertId]);
 
     return (
-        <>
-            <Dialog open={isOpen}
-                    footer={<Bar design="Footer" endContent={<Button onClick={onClose}>Close</Button>}/>}
-                    header={<DynamicPageTitle header={advertDetailsDto?.advert_id} />}
+            <Dialog
+                ref={ref}
+                footer={<FlexBox alignItems={FlexBoxAlignItems.Center}><Button onClick={onClose}>Close</Button></FlexBox>}
+                header={<FlexBox alignItems={FlexBoxAlignItems.Center}><Title level={TitleLevel.H4}>{advertDetailsDto?.advert_id}</Title></FlexBox>}
             >
 
-                {isDetailsLoading && <BusyIndicator active delay={0} /> }
+                { isDetailsLoading && <BusyIndicator active delay={0} /> }
 
-                {!isDetailsLoading && (
+                { !isDetailsLoading && (
                     <>
-                        <Form>
-                            <FormItem label={<Label>City</Label>}>
-                                <Label>{advertDetailsDto?.city_name}</Label>
-                            </FormItem>
-                            <FormItem label={<Label>Room Count</Label>}>
-                                <Label>{advertDetailsDto?.rooms_count}</Label>
-                            </FormItem>
-                            <FormItem label={<Label>Description</Label>}>
-                                <ExpandableText maxCharacters={50}>
-                                    {advertDetailsDto?.description}
-                                </ExpandableText>
-                            </FormItem>
-                        </Form>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <Label>City:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.city_name}</Title>
+                        </FlexBox>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <Label>Rooms Count:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.rooms_count}</Title>
+                        </FlexBox>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <ExpandableText  maxCharacters={50}>
+                                {advertDetailsDto?.description}
+                            </ExpandableText>
+                        </FlexBox>
                     </>
                 )}
             </Dialog>
-        </>
     );
 
-}
+});
 
+export default AdvertDetailsModal;

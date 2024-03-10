@@ -7,7 +7,8 @@ from pydantic.tools import parse_obj_as
 from dimria.cosmos_db import process_advert
 
 from dimria.dimria_requests import search_adverts, get_advert_details
-from dimria.models import AdvertDetails, AdvertsList
+from dimria.models.AdvertDetails import AdvertDetails
+from dimria.models.AdvertsList import AdvertsList
 from dimria.models.AdvertDetailsResponse import AdvertDetailsResponse, AdvertDetailsResponseEncoder
 from dimria.models.AdvertDtoEncoder import AdvertDtoEncoder
 from dimria.requests_handle import get_adverts_statistics, get_http_advert_details
@@ -19,7 +20,7 @@ app = func.FunctionApp()
 
 #@app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
 @app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
-def timer_search_adverts(mytimer: func.TimerRequest) -> None:
+def timer_search_adverts(mytimer: func.TimerRequest) -> None: # req: func.HttpRequest  func.HttpResponse: # # mytimer: func.TimerRequest
 
     searchResponse = search_adverts()
     if not searchResponse:

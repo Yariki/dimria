@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import React, {forwardRef, useEffect} from "react";
-import {fetchAdvertDetailsStart} from "../../redux/adverts/advertSlices";
+import {fetchAdvertDetailsFailure, fetchAdvertDetailsStart} from "../../redux/adverts/advertSlices";
 import {
     BusyIndicator,
     Button,
@@ -26,8 +26,14 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
 
     const isDetailsLoading = useSelector(selectDetailsLoading);
     const advertDetailsDto = useSelector(selectDetails);
+    const loadingError = useSelector(fetchAdvertDetailsFailure);
 
     useEffect(() => {
+
+        if(advertId === '' || advertId === null || advertId === undefined){
+            return;
+        }
+
         dispatch(fetchAdvertDetailsStart(advertId));
     },[advertId]);
 

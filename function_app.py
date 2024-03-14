@@ -7,6 +7,7 @@ from pydantic.tools import parse_obj_as
 from dimria.cosmos_db import process_advert
 
 from dimria.dimria_requests import search_adverts, get_advert_details
+from dimria.handle_details import build_ptoho_url, parse_photos, build_main_advert_url
 from dimria.models.AdvertDetails import AdvertDetails
 from dimria.models.AdvertsList import AdvertsList
 from dimria.models.AdvertDetailsResponse import AdvertDetailsResponse, AdvertDetailsResponseEncoder
@@ -18,7 +19,7 @@ app = func.FunctionApp()
 
 ################################################################################################
 
-#@app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
+# @app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
 @app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
 def timer_search_adverts(mytimer: func.TimerRequest) -> None: # req: func.HttpRequest  func.HttpResponse: # # mytimer: func.TimerRequest
 
@@ -116,7 +117,13 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     rooms_count = resultRequest['rooms_count']
     currency_type_uk = resultRequest['currency_type_uk']
     description = resultRequest['description_uk']
-    floor=resultRequest['floor_info']
+    floor=resultRequest['floor']
+    photos = parse_photos(resultRequest['photos'])
+    main_photo = build_ptoho_url(resultRequest['main_photo'])
+    lat = resultRequest['latitude']
+    lon = resultRequest['longitude']
+    building_name = resultRequest['user_newbuild_name']
+    url = build_main_advert_url(resultRequest['beautiful_url'])
 
     resultResponse: AdvertDetailsResponse = AdvertDetailsResponse(
         advert_id=advert_id,
@@ -125,7 +132,13 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
         rooms_count=rooms_count,
         currency=currency_type_uk,
         description=description,
-        floor=floor
+        floor=floor,
+        main_photo=main_photo,
+        lat = lat,
+        lon = lon,
+        building_name = building_name,
+        url = url,
+        photos=photos
     )
 
     data = json.dumps(resultResponse, cls=AdvertDetailsResponseEncoder)

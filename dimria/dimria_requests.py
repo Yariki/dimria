@@ -3,7 +3,7 @@ import os
 import logging
 from pydantic.tools import parse_obj_as
 
-from dimria.models.SearchResponse import SearchResponse
+from dimria.models.searchresponse import SearchResponse
 from dimria.models.AdvertDetails import AdvertDetails
 
 API_KEY = os.getenv("DIMRIA_API_KEY")

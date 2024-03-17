@@ -5,7 +5,7 @@ import {
 } from "@ui5/webcomponents-react";
 import {AdvertList} from "../AdvertList";
 import {AdvertDto} from "../../models/AdvertDto";
-import React, {useEffect, useState, useRef} from "react";
+import {useState, useRef} from "react";
 import {AdvertPrices} from "../AdvertPrices";
 import AdvertDetailsModal from "../AdvertDetails";
 import { createUseStyles } from 'react-jss';

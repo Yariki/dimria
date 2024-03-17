@@ -7,7 +7,7 @@ import {
     Dialog, ExpandableText,
     FlexBox,
     FlexBoxAlignItems,
-    Label,
+    Label, Link, MediaGallery, MediaGalleryItem,
     Title,
     TitleLevel,
 } from "@ui5/webcomponents-react";
@@ -35,13 +35,13 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
         }
 
         dispatch(fetchAdvertDetailsStart(advertId));
-    },[advertId]);
+    },[advertId, dispatch]);
 
     return (
             <Dialog
                 ref={ref}
                 footer={<FlexBox alignItems={FlexBoxAlignItems.Center}><Button onClick={onClose}>Close</Button></FlexBox>}
-                header={<FlexBox alignItems={FlexBoxAlignItems.Center}><Title level={TitleLevel.H4}>{advertDetailsDto?.advert_id}</Title></FlexBox>}
+                header={<FlexBox alignItems={FlexBoxAlignItems.Center}><Link href={advertDetailsDto?.url} target="_blank">{advertDetailsDto?.advert_id}</Link></FlexBox>}
             >
 
                 { isDetailsLoading && <BusyIndicator active delay={0} /> }
@@ -55,10 +55,34 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
                             <Label>Rooms Count:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.rooms_count}</Title>
                         </FlexBox>
                         <FlexBox alignItems={FlexBoxAlignItems.Center}>
-                            <ExpandableText  maxCharacters={50}>
+                            <Label>Floor:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.floor}</Title>
+                        </FlexBox>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <Label>Building name:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.building_name}</Title>
+                        </FlexBox>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <ExpandableText  maxCharacters={50} >
                                 {advertDetailsDto?.description}
                             </ExpandableText>
                         </FlexBox>
+
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <MediaGallery layout="Auto">
+                                {
+                                    advertDetailsDto?.photos.map((photo, index) => {
+                                        return (
+                                            photo.map((item) => (
+                                                    <MediaGalleryItem key={index}>
+                                                        <img src={item} alt="photo" />
+                                                    </MediaGalleryItem>
+                                            ))
+                                        );
+                                    })
+                                }
+                            </MediaGallery>
+                        </FlexBox>
+
+
                     </>
                 )}
             </Dialog>

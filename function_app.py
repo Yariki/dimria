@@ -107,7 +107,7 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     if(resultRequest is None):
         return func.HttpResponse("No advert details found", status_code=404)
 
-    print(type(resultRequest))
+    print(resultRequest)
 
     cityName = resultRequest['city_name']
     state_id = resultRequest['state_id']
@@ -126,19 +126,19 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     url = build_main_advert_url(resultRequest['beautiful_url'])
 
     resultResponse: AdvertDetailsResponse = AdvertDetailsResponse(
-        advert_id=advert_id,
-        city_name=cityName,
-        price=price,
-        rooms_count=rooms_count,
-        currency=currency_type_uk,
-        description=description,
-        floor=floor,
-        main_photo=main_photo,
-        lat = lat,
-        lon = lon,
-        building_name = building_name,
-        url = url,
-        photos=photos
+        advert_id,
+        cityName,
+        price,
+        rooms_count,
+        currency_type_uk,
+        description,
+        floor,
+        main_photo,
+        lat,
+        lon,
+        building_name,
+        url,
+        photos
     )
 
     data = json.dumps(resultResponse, cls=AdvertDetailsResponseEncoder)

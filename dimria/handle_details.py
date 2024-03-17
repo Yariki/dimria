@@ -4,7 +4,7 @@ def build_ptoho_url(file):
     file = split[0] + "xl." + split[1]
     return f'https://cdn.riastatic.com/photos/{file}'
 
-def parse_photos(photos):
+def parse_photos(photos) -> []:
     result = []
     for photoId in photos:
         photo = photos[photoId]

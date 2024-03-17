@@ -7,4 +7,10 @@ export interface AdvertDetailsDto{
     currency: string;
     floor: string;
     rooms_count: number;
+    main_photo: string;
+    lat?: number;
+    lon?: number;
+    building_name: string;
+    url: string;
+    photos: string[][];
 }

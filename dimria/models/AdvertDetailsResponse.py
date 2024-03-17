@@ -3,7 +3,9 @@ from json import JSONEncoder
 
 class AdvertDetailsResponse:
 
-    def __init__(self, advert_id, city_name,  description, price, currency,floor, rooms_count, main_photo, lat, lon, building_name, url, photos = []) -> None:
+    photos = []
+
+    def __init__(self, advert_id, city_name,  description, price, currency,floor, rooms_count, main_photo, lat, lon, building_name, url, photos) -> None:
         self.advert_id = advert_id
         self.city_name = city_name
         self.description = description

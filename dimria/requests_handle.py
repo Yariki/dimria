@@ -54,6 +54,10 @@ def get_http_advert_details(advert_id: int):
     details_url = f"https://developers.ria.com/dom/info/{advert_id}?api_key={API_KEY}"
 
     response = requests.get(details_url)
+
+    if response.status_code != 200:
+        return None
+
     json = response.json()
 
     if not json:

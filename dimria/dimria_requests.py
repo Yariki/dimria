@@ -8,20 +8,35 @@ from dimria.models.AdvertDetails import AdvertDetails
 
 API_KEY = os.getenv("DIMRIA_API_KEY")
 
-state_id = 2
-city_ids = 2
-n_id = 6696
-
-SEARCH_URL = f"https://developers.ria.com/dom/search?category=1&realty_type=0&operation_type=1&state_id={state_id}&city_ids={city_ids}&api_key={API_KEY}&n_id={n_id}"
-
+search_items = [
+    {
+        'state_id': 2,
+        'city_id': 2,
+        'n_id': 6696
+    },
+    {
+        'state_id': 10,
+        'city_id': 17306,
+        'n_id': None
+    }
+]
 
 def search_adverts() -> SearchResponse:
-    response = requests.get(SEARCH_URL)
 
-    advertDetails = response.json()
+    count = 0
+    items = []
 
-    count = advertDetails["count"]
-    items = advertDetails["items"]
+
+    for item in search_items:
+
+        url = _get_url(item.get('state_id'), item.get('city_id'), item.get('n_id'))
+
+        response = requests.get(url)
+
+        advertDetails = response.json()
+
+        count += advertDetails["count"]
+        items.extend(advertDetails["items"])
 
     searchResponse = SearchResponse(
         count=count,
@@ -32,7 +47,7 @@ def search_adverts() -> SearchResponse:
         logging.error("No adverts found")
         return None
 
-    if searchResponse.count == 0:
+    if searchResponse.count == 0: 
         logging.error("No adverts found")
         return None
 
@@ -51,3 +66,12 @@ def get_advert_details(advertId: int) -> AdvertDetails:
         return None
 
     return details
+
+
+
+def _get_url(state_id, city_id, n_id = None):
+
+    if n_id is None:
+        return f"https://developers.ria.com/dom/search?category=1&realty_type=0&operation_type=1&state_id={state_id}&city_ids={city_id}&api_key={API_KEY}"
+
+    return  f"https://developers.ria.com/dom/search?category=1&realty_type=0&operation_type=1&state_id={state_id}&city_ids={city_id}&api_key={API_KEY}&n_id={n_id}"

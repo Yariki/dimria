@@ -8,7 +8,7 @@ from dimria.cosmos_db import process_advert
 
 from dimria.dimria_requests import search_adverts, get_advert_details
 from dimria.handle_details import build_ptoho_url, parse_photos, build_main_advert_url
-from dimria.models.AdvertDetails import AdvertDetails
+from dimria.models.AdvertDetails import AdvertDetails, parse_details_from_json
 from dimria.models.AdvertsList import AdvertsList
 from dimria.models.AdvertDetailsResponse import AdvertDetailsResponse, AdvertDetailsResponseEncoder
 from dimria.models.AdvertDtoEncoder import AdvertDtoEncoder
@@ -21,7 +21,7 @@ app = func.FunctionApp()
 
 # @app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
 @app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
-def timer_search_adverts(mytimer: func.TimerRequest) -> None: # req: func.HttpRequest  func.HttpResponse: # # mytimer: func.TimerRequest
+def timer_search_adverts(mytimer: func.TimerRequest) -> None: # req: func.HttpRequest  func.HttpResponse: #  mytimer: func.TimerRequest -> None:
 
     searchResponse = search_adverts()
     if not searchResponse:
@@ -32,6 +32,8 @@ def timer_search_adverts(mytimer: func.TimerRequest) -> None: # req: func.HttpRe
         logging.info("Send message about adverts")
         advertList = AdvertsList(items=searchResponse.items)
         send_advert_list_message(advertList)
+
+    # return func.HttpResponse(f"Found {searchResponse.count} adverts", status_code=200)
 
 ################################################################################################
 
@@ -54,9 +56,10 @@ def adverts_list_message_handler(msg: func.ServiceBusMessage):
 
     for advertId in advertList.items:
         logging.info(f"Get details for advert {advertId}")
-        details = get_advert_details(advertId)
+        details = get_http_advert_details(advertId)
         if details is not None:
-            logging.info(f"City: {details.city_id}: Rooms: {details.rooms_count}: Price: {details.currency_type_uk}{details.price}")
+            details = parse_details_from_json(details, advertId)
+            # logging.info(f"City: {details["city_id"]}: Rooms: {details["rooms_count"]}: Price: {details["currency_type_uk"]}{details["price"]}")
             send_advert_detail_message(details)
         else:
             logging.error(f"Error getting details for advert {advertId}")
@@ -73,7 +76,7 @@ def advert_details_save_db(msg: func.ServiceBusMessage):
     try:
         str_data = msg.get_body().decode('utf-8')
         json_data = json.loads(str_data)
-        advert = parse_obj_as(AdvertDetails, json_data)
+        advert = parse_details_from_json(json_data)
 
         process_advert(advert)
     except Exception as e:
@@ -105,7 +108,7 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     resultRequest = get_http_advert_details(advert_id)
 
     if(resultRequest is None):
-        return func.HttpResponse("No advert details found", status_code=404)
+        return func.HttpResponse(f"No advert details found for advert id - {advert_id}", status_code=404)
 
     print(resultRequest)
 

@@ -1,10 +1,11 @@
-import {selectAdverts} from "../../redux/adverts/selectors";
-import {useSelector} from "react-redux";
-import {AnalyticalTable, Grid, Link} from "@ui5/webcomponents-react";
-import React from "react";
+import {selectAdverts, selectCities, selectCitiesLoading} from "../../redux/adverts/selectors";
+import {useDispatch, useSelector} from "react-redux";
+import {AnalyticalTable, Grid, Link, Select, Option} from "@ui5/webcomponents-react";
+import React, { useEffect } from "react";
 import {Icon} from "@ui5/webcomponents-react";
 import "@ui5/webcomponents-icons/dist/AllIcons.js"
 import {AdvertDto} from "../../models/AdvertDto";
+import { fetchAdvertsStart } from "../../redux/adverts/advertSlices";
 
 
 export interface AdvertListProps {
@@ -12,11 +13,28 @@ export interface AdvertListProps {
     onLinkClick: (advertId: string) => void;
 }
 
+
 export const AdvertList = (props: AdvertListProps) => {
 
+    const dispatch = useDispatch();
     const adverts = useSelector(selectAdverts);
+    const cities = useSelector(selectCities);
+    const citiesLoading = useSelector(selectCitiesLoading);
+
+    const [selectedCity, setSelectedCity] = React.useState<number | null>(null);
+
+    const options = [{city_id: -1, city_name: 'All'}, ...cities || []];
 
     const {onLinkClick} = props;
+
+    useEffect(() => {
+
+        if(selectedCity === null ||  isNaN(selectedCity)){
+            return;
+        }
+
+        dispatch(fetchAdvertsStart(selectedCity));
+    },[selectedCity])
 
     const columns = [
         {
@@ -80,6 +98,21 @@ export const AdvertList = (props: AdvertListProps) => {
 
     return (
         <>
+            {
+                !citiesLoading &&
+                (<div>
+                    <label>City</label>
+                    <Select onChange={(e) =>
+                            {
+                                setSelectedCity(parseInt(e.detail.selectedOption.getAttribute('data-id') ?? '-1'));
+                            }
+                        }>
+                        {options.map((city) => {
+                            return <Option key={city.city_id} data-id={city.city_id}>{city.city_name}</Option>
+                        })}
+                    </Select>
+                </div>)
+            }
             { adverts && <AnalyticalTable
                 header="Adverts"
                 selectionMode="SingleSelect"
@@ -91,3 +124,7 @@ export const AdvertList = (props: AdvertListProps) => {
     );
 
 };
+
+function dispatch(arg0: { payload: number; type: "advert/fetchAdvertsStart"; }) {
+    throw new Error("Function not implemented.");
+}

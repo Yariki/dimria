@@ -70,7 +70,7 @@ def get_advert_details(advertId: int) -> AdvertDetails:
     return details
 
 
-def get_cities():
+def get_http_cities():
     cities = []
 
     for item in SEARCH_ITEMS:

@@ -2,6 +2,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import {AdvertDto} from "../../models/AdvertDto";
 import {AdvertDetailsDto} from "../../models/AdvertDetailsDto";
 import {Action} from "../../models/types";
+import { CityDto } from "../../models/CityDto";
+import { fetchCities } from "./requests";
 
 
 export interface AdvertsState {
@@ -11,6 +13,9 @@ export interface AdvertsState {
     details: AdvertDetailsDto | null;
     detailsLoading: boolean;
     detailsError: string | null;
+    cities: CityDto[] | null;
+    loadingCities: boolean;
+    citiesError: string | null;
 }
 
 const initState : AdvertsState = {
@@ -19,14 +24,17 @@ const initState : AdvertsState = {
     error: '',
     details: null,
     detailsLoading: false,
-    detailsError: ''
+    detailsError: '',
+    cities: null,
+    loadingCities: false,
+    citiesError: ''
 }
 
 export const advertSlice = createSlice({
     name: 'advert',
     initialState: () => initState,
     reducers : {
-        fetchAdvertsStart: (state: AdvertsState) => {
+        fetchAdvertsStart: (state: AdvertsState, action: Action<number>) => {
             state.loading = true;
             state.error = '';
         },
@@ -53,6 +61,18 @@ export const advertSlice = createSlice({
             state.details = null;
             state.detailsLoading = false;
             state.detailsError = action.payload;
+        },
+        fetchCitiesStart: (state: AdvertsState) => {
+            state.loadingCities = true;
+        },
+        fetchCitiesSuccess: (state: AdvertsState, action: Action<any>) => {
+            state.cities = action.payload as CityDto[];
+            state.loadingCities = false;
+        },
+        fetchCitiesFailure: (state: AdvertsState, action: Action<string>) => {
+            state.cities = null;
+            state.loadingCities = false;
+            state.citiesError = action.payload;
         }
     }
 });
@@ -63,7 +83,10 @@ export const {
         fetchAdvertsFailure,
         fetchAdvertDetailsStart,
         fetchAdvertDetailsSuccess,
-        fetchAdvertDetailsFailure
+        fetchAdvertDetailsFailure,
+        fetchCitiesStart,
+        fetchCitiesSuccess,
+        fetchCitiesFailure
     } = advertSlice.actions;
 
 export default  advertSlice.reducer;

@@ -6,7 +6,7 @@ import time
 from pydantic.tools import parse_obj_as
 from dimria.cosmos_db import process_advert
 
-from dimria.dimria_requests import search_adverts, get_advert_details
+from dimria.dimria_requests import get_http_cities, search_adverts, get_advert_details
 from dimria.handle_details import build_ptoho_url, parse_photos, build_main_advert_url
 from dimria.models.AdvertDetails import AdvertDetails, parse_details_from_json
 from dimria.models.AdvertsList import AdvertsList
@@ -161,8 +161,8 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse(data, status_code=200, headers=HEADERS)
 
 @app.route("get_cities", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS )
-def get_cities() -> func.HttpResponse:
-    items = get_cities()
+def get_cities(req: func.HttpRequest) -> func.HttpResponse:
+    items = get_http_cities()
 
     return func.HttpResponse(json.dumps(items), status_code=200, headers=HEADERS)
 

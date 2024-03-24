@@ -5,15 +5,21 @@ import {
     fetchAdvertsFailure,
     fetchAdvertDetailsStart,
     fetchAdvertDetailsSuccess,
-    fetchAdvertDetailsFailure
+    fetchAdvertDetailsFailure,
+    fetchCitiesStart,
+    fetchCitiesSuccess,
+    fetchCitiesFailure
 } from './advertSlices';
-import {fetchAdverts, fetchAdvertDetails, delay} from "./requests";
+import {fetchAdverts, fetchAdvertDetails, fetchCities} from "./requests";
 import {Action} from "../../models/types";
 
 function* fetchAdvertsAsync(action: ReturnType<typeof fetchAdvertsStart> )  {
     try {
+
+        const cityId =  action.payload;
+
         // @ts-ignore
-        const response = yield call(fetchAdverts);
+        const response = yield call(fetchAdverts, cityId);
         yield put(fetchAdvertsSuccess(response.data));
     } catch (error) {
         yield put(fetchAdvertsFailure("Error fetching data"));
@@ -41,7 +47,19 @@ function* fetchAdvertDetailsAsync(action: Action<string> )  {
     }
 }
 
+function* fetchCitiesAsync() {
+    try {
+        // @ts-ignore
+        const response = yield call(fetchCities);
+        yield put(fetchCitiesSuccess(response.data));
+    } catch (error) {
+        yield put(fetchCitiesFailure("Error fetching cities"));
+        console.log(error);
+    }
+}
+
 export function* advertsSaga() {
     yield takeLatest(fetchAdvertsStart.type, fetchAdvertsAsync);
     yield takeLatest(fetchAdvertDetailsStart.type, fetchAdvertDetailsAsync);
+    yield takeLatest(fetchCitiesStart.type, fetchCitiesAsync);
 }

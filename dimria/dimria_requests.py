@@ -8,16 +8,18 @@ from dimria.models.AdvertDetails import AdvertDetails
 
 API_KEY = os.getenv("DIMRIA_API_KEY")
 
-search_items = [
+SEARCH_ITEMS = [
     {
         'state_id': 2,
         'city_id': 2,
-        'n_id': 6696
+        'n_id': 6696,
+        'city_name': 'Житомир'
     },
     {
         'state_id': 10,
         'city_id': 17306,
-        'n_id': None
+        'n_id': None,
+        'city_name': 'Чубинське'
     }
 ]
 
@@ -27,7 +29,7 @@ def search_adverts() -> SearchResponse:
     items = []
 
 
-    for item in search_items:
+    for item in SEARCH_ITEMS:
 
         url = _get_url(item.get('state_id'), item.get('city_id'), item.get('n_id'))
 
@@ -47,7 +49,7 @@ def search_adverts() -> SearchResponse:
         logging.error("No adverts found")
         return None
 
-    if searchResponse.count == 0: 
+    if searchResponse.count == 0:
         logging.error("No adverts found")
         return None
 
@@ -66,6 +68,19 @@ def get_advert_details(advertId: int) -> AdvertDetails:
         return None
 
     return details
+
+
+def get_cities():
+    cities = []
+
+    for item in SEARCH_ITEMS:
+        cities.append({
+            'city_id': item.get('city_id'),
+            'city_name': item.get('city_name')
+
+        });
+
+    return cities;
 
 
 

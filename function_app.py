@@ -15,12 +15,18 @@ from dimria.models.AdvertDtoEncoder import AdvertDtoEncoder
 from dimria.requests_handle import get_adverts_statistics, get_http_advert_details
 from dimria.service_bus import send_advert_detail_message, send_advert_list_message
 
+HEADERS = {
+            "Access-Control-Allow-Origin" : "*",
+            "Access-Control-Allow-Credentials" : "true",
+            "Access-Control-Allow-Methods" : "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers" : "Origin, Content-Type, Accept"}
+
 app = func.FunctionApp()
 
 ################################################################################################
 
 # @app.route(route="search_adverts", auth_level=func.AuthLevel.ANONYMOUS)
-@app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
+#@app.schedule(schedule="0 */30 * * * *", arg_name="mytimer", run_on_startup=True, use_monitor=False)
 def timer_search_adverts(mytimer: func.TimerRequest) -> None: # req: func.HttpRequest  func.HttpResponse: #  mytimer: func.TimerRequest -> None:
 
     searchResponse = search_adverts()
@@ -84,16 +90,22 @@ def advert_details_save_db(msg: func.ServiceBusMessage):
 
 ################################################################################################
 
-@app.route("get_advertisements", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
+@app.route("get_advertisements/{cityId:int?}", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def get_advertisements(req: func.HttpRequest) -> func.HttpResponse:
 
-    results = get_adverts_statistics()
+    cityId = req.route_params.get('cityId')
+
+    if(cityId is None):
+        cityId = -1
+
+    results = get_adverts_statistics(int(cityId))
 
     if(results is None):
-        return func.HttpResponse("No adverts found", status_code=404)
+        return func.HttpResponse("No adverts found", status_code=404, headers=HEADERS)
 
     data = json.dumps(results, cls=AdvertDtoEncoder)
-    return data
+
+    return func.HttpResponse(data, status_code=200, headers=HEADERS)
 
 ################################################################################################
 
@@ -103,30 +115,30 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     advert_id = req.route_params.get('id')
 
     if(advert_id is None):
-        return func.HttpResponse("No advert id found", status_code=404)
+        return func.HttpResponse("No advert id found", status_code=404, headers=HEADERS)
 
     resultRequest = get_http_advert_details(advert_id)
 
     if(resultRequest is None):
-        return func.HttpResponse(f"No advert details found for advert id - {advert_id}", status_code=404)
+        return func.HttpResponse(f"No advert details found for advert id - {advert_id}", status_code=404, headers=HEADERS)
 
-    print(resultRequest)
+    # print(resultRequest)
 
-    cityName = resultRequest['city_name']
-    state_id = resultRequest['state_id']
-    city_id = resultRequest['city_id']
-    currency_type_id = resultRequest['currency_type_id']
-    price = resultRequest['price']
-    rooms_count = resultRequest['rooms_count']
-    currency_type_uk = resultRequest['currency_type_uk']
-    description = resultRequest['description_uk']
-    floor=resultRequest['floor']
-    photos = parse_photos(resultRequest['photos'])
-    main_photo = build_ptoho_url(resultRequest['main_photo'])
-    lat = resultRequest['latitude']
-    lon = resultRequest['longitude']
-    building_name = resultRequest['user_newbuild_name']
-    url = build_main_advert_url(resultRequest['beautiful_url'])
+    cityName = resultRequest['city_name'] if 'city_name' in resultRequest else 'Unknown'
+    state_id = resultRequest['state_id'] if 'state_id' in resultRequest else 0
+    city_id = resultRequest['city_id'] if 'city_id' in resultRequest else 0
+    currency_type_id = resultRequest['currency_type_id'] if 'currency_type_id' in resultRequest else 0
+    price = resultRequest['price'] if 'price' in resultRequest else 0
+    rooms_count = resultRequest['rooms_count'] if 'rooms_count' in resultRequest else 0
+    currency_type_uk = resultRequest['currency_type_uk'] if 'currency_type_uk' in resultRequest else '$'
+    description = resultRequest['description_uk'] if 'description_uk' in resultRequest else ''
+    floor=resultRequest['floor'] if 'floor' in resultRequest else 0
+    photos = parse_photos(resultRequest['photos']) if 'photos' in resultRequest else []
+    main_photo = build_ptoho_url(resultRequest['main_photo']) if 'main_photo' in resultRequest else ''
+    lat = resultRequest['latitude'] if 'latitude' in resultRequest else 0
+    lon = resultRequest['longitude'] if 'longitude' in resultRequest else 0
+    building_name = resultRequest['user_newbuild_name'] if 'user_newbuild_name' in resultRequest else ''
+    url = build_main_advert_url(resultRequest['beautiful_url']) if 'beautiful_url' in resultRequest else ''
 
     resultResponse: AdvertDetailsResponse = AdvertDetailsResponse(
         advert_id,
@@ -145,4 +157,12 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
     )
 
     data = json.dumps(resultResponse, cls=AdvertDetailsResponseEncoder)
-    return data
+
+    return func.HttpResponse(data, status_code=200, headers=HEADERS)
+
+@app.route("get_cities", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS )
+def get_cities() -> func.HttpResponse:
+    items = get_cities()
+
+    return func.HttpResponse(json.dumps(items), status_code=200, headers=HEADERS)
+

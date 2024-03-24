@@ -3,7 +3,7 @@ import logging
 import os
 
 import requests
-from dimria.cosmos_db import get_adverts
+from dimria.cosmos_db import get_adverts, get_adverts_filtered
 from dimria.models.AdvertDetailsRequest import AdvertDetailsResult
 from dimria.models.AdvertDto import AdvertDto
 from dimria.models.PriceDto import PriceDto
@@ -11,9 +11,9 @@ from dimria.models.PriceDto import PriceDto
 API_KEY = os.getenv("DIMRIA_API_KEY")
 
 
-def get_adverts_statistics() -> list: # type: ignore
+def get_adverts_statistics(cityId: int) -> list: # type: ignore
 
-    adverts = get_adverts()
+    adverts = get_adverts() if cityId == -1 else get_adverts_filtered(cityId)
     if not adverts:
         logging.error("No adverts found")
         return None

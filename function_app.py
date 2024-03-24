@@ -142,18 +142,18 @@ def get_advert_details(req: func.HttpRequest) -> func.HttpResponse:
 
     resultResponse: AdvertDetailsResponse = AdvertDetailsResponse(
         advert_id,
-        cityName,
-        price,
-        rooms_count,
-        currency_type_uk,
-        description,
-        floor,
-        main_photo,
-        lat,
-        lon,
-        building_name,
-        url,
-        photos
+        city_name=cityName,
+        price=price,
+        rooms_count=rooms_count,
+        currency=currency_type_uk,
+        description=description,
+        floor=floor,
+        main_photo=main_photo,
+        lat=lat,
+        lon=lon,
+        building_name=building_name,
+        url=url,
+        photos=photos
     )
 
     data = json.dumps(resultResponse, cls=AdvertDetailsResponseEncoder)

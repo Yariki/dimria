@@ -52,6 +52,12 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
                             <Label>City:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.city_name}</Title>
                         </FlexBox>
                         <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <Label>Price:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.price}</Title>
+                        </FlexBox>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
+                            <Label>Currency:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.currency}</Title>
+                        </FlexBox>
+                        <FlexBox alignItems={FlexBoxAlignItems.Center}>
                             <Label>Rooms Count:</Label><Title level={TitleLevel.H6}> {advertDetailsDto?.rooms_count}</Title>
                         </FlexBox>
                         <FlexBox alignItems={FlexBoxAlignItems.Center}>

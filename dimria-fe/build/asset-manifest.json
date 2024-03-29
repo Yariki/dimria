@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.75570617.css",
-    "main.js": "/static/js/main.8b62f34c.js",
+    "main.js": "/static/js/main.9ebcd8b7.js",
     "ui5-webcomponents-sap-icons-v5.js": "/static/js/ui5-webcomponents-sap-icons-v5.833cb268.chunk.js",
     "ui5-webcomponents-sap-icons-v4.js": "/static/js/ui5-webcomponents-sap-icons-v4.d3c1dd9a.chunk.js",
     "static/js/6453.1cee94a1.chunk.js": "/static/js/6453.1cee94a1.chunk.js",
@@ -330,11 +330,11 @@
     "ui5-webcomponents-react-messagebundle-zh_TW.js": "/static/js/ui5-webcomponents-react-messagebundle-zh_TW.4f52269b.chunk.js",
     "index.html": "/index.html",
     "main.75570617.css.map": "/static/css/main.75570617.css.map",
-    "main.8b62f34c.js.map": "/static/js/main.8b62f34c.js.map",
+    "main.9ebcd8b7.js.map": "/static/js/main.9ebcd8b7.js.map",
     "6453.1cee94a1.chunk.js.map": "/static/js/6453.1cee94a1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.75570617.css",
-    "static/js/main.8b62f34c.js"
+    "static/js/main.9ebcd8b7.js"
   ]
 }

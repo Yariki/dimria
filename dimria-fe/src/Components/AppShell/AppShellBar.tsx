@@ -1,7 +1,5 @@
-import navBackIcon from '@ui5/webcomponents-icons/dist/nav-back.js';
 import paletteIcon from '@ui5/webcomponents-icons/dist/palette.js';
 import {
-    Button,
     List,
     ListMode,
     ListPropTypes,

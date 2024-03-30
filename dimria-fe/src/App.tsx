@@ -15,7 +15,7 @@ function App() {
     useEffect(() => {
         dispatch(fetchAdvertsStart(-1));
         dispatch(fetchCitiesStart());
-    }, []);
+    }, [dispatch]);
 
   return (
     <>

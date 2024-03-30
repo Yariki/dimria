@@ -1,9 +1,8 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import {AdvertDto} from "../../models/AdvertDto";
 import {AdvertDetailsDto} from "../../models/AdvertDetailsDto";
 import {Action} from "../../models/types";
 import { CityDto } from "../../models/CityDto";
-import { fetchCities } from "./requests";
 
 
 export interface AdvertsState {

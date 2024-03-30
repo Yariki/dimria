@@ -1,7 +1,5 @@
 import {AnalyticalTable, CommonProps} from "@ui5/webcomponents-react";
 import {AdvertDto} from "../../models/AdvertDto";
-import {render} from "@testing-library/react";
-
 
 export interface AdvertPricesProps  extends CommonProps {
     advertDto: AdvertDto | null;

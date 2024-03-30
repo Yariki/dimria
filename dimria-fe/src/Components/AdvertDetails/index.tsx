@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
-import React, {forwardRef, useEffect} from "react";
-import {fetchAdvertDetailsFailure, fetchAdvertDetailsStart} from "../../redux/adverts/advertSlices";
+import {forwardRef, useEffect} from "react";
+import { fetchAdvertDetailsStart} from "../../redux/adverts/advertSlices";
 import {
     BusyIndicator,
     Button,
@@ -26,7 +26,6 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
 
     const isDetailsLoading = useSelector(selectDetailsLoading);
     const advertDetailsDto = useSelector(selectDetails);
-    const loadingError = useSelector(fetchAdvertDetailsFailure);
 
     useEffect(() => {
 
@@ -79,7 +78,7 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
                                         return (
                                             photo.map((item) => (
                                                     <MediaGalleryItem key={index}>
-                                                        <img src={item} alt="photo" />
+                                                        <img src={item} alt={item} />
                                                     </MediaGalleryItem>
                                             ))
                                         );

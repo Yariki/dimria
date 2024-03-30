@@ -1,6 +1,6 @@
 import {selectAdverts, selectCities, selectCitiesLoading} from "../../redux/adverts/selectors";
 import {useDispatch, useSelector} from "react-redux";
-import {AnalyticalTable, Grid, Link, Select, Option} from "@ui5/webcomponents-react";
+import {AnalyticalTable, Link, Select, Option} from "@ui5/webcomponents-react";
 import React, { useEffect } from "react";
 import {Icon} from "@ui5/webcomponents-react";
 import "@ui5/webcomponents-icons/dist/AllIcons.js"
@@ -34,7 +34,7 @@ export const AdvertList = (props: AdvertListProps) => {
         }
 
         dispatch(fetchAdvertsStart(selectedCity));
-    },[selectedCity])
+    },[selectedCity, dispatch])
 
     const columns = [
         {
@@ -124,7 +124,3 @@ export const AdvertList = (props: AdvertListProps) => {
     );
 
 };
-
-function dispatch(arg0: { payload: number; type: "advert/fetchAdvertsStart"; }) {
-    throw new Error("Function not implemented.");
-}

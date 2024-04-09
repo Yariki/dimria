@@ -8,7 +8,7 @@ import {
     Dialog, ExpandableText,
     FlexBox,
     FlexBoxAlignItems,
-    Label, Link, MediaGallery, MediaGalleryItem,
+    Label, Link,
     Title,
     TitleLevel,
 } from "@ui5/webcomponents-react";

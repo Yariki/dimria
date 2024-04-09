@@ -4,6 +4,7 @@ import { fetchAdvertDetailsStart} from "../../redux/adverts/advertSlices";
 import {
     BusyIndicator,
     Button,
+    Carousel,
     Dialog, ExpandableText,
     FlexBox,
     FlexBoxAlignItems,
@@ -72,19 +73,20 @@ const AdvertDetailsModal = forwardRef<typeof Dialog, AdvertDetailsModalProps>((p
                         </FlexBox>
 
                         <FlexBox alignItems={FlexBoxAlignItems.Center}>
-                            <MediaGallery layout="Auto">
+                            <Carousel arrowsPlacement="Content">
                                 {
                                     advertDetailsDto?.photos.map((photo, index) => {
                                         return (
                                             photo.map((item) => (
-                                                    <MediaGalleryItem key={index}>
-                                                        <img src={item} alt={item} />
-                                                    </MediaGalleryItem>
+
+                                                    <img key={index}
+                                                        src={item} alt={item} />
+
                                             ))
                                         );
                                     })
                                 }
-                            </MediaGallery>
+                            </Carousel>
                         </FlexBox>
 
 
